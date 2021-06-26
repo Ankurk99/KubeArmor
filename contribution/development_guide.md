@@ -5,8 +5,7 @@
 1. Self-managed Kubernetes
    * Requirements
 
-     Here is the list of minimum requirements for self-managed Kubernetes.
-
+     List of minimum requirements for self-managed Kubernetes.
      ```text
      OS - Ubuntu 18.04
      Kubernetes - v1.19
@@ -26,8 +25,8 @@
       Instead of self-managed Kubernetes, you can set up MicroK8s. For this, please run the following command.
 
        ```text
-       $ cd contribution/microk8s
-       (microk8s) $ ./install_microk8s.sh
+       $ cd KubeArmor/contribution/microk8s
+       ~/KubeArmor/contribution/microk8s$ ./install_microk8s.sh
        ```
 
    * Development Setup
@@ -35,8 +34,8 @@
      In order to install all dependencies, please run the following command.
 
      ```text
-     $ cd contribution/self-managed-k8s
-     (self-managed-k8s) $ ./setup.sh
+     $ cd KubeArmor/contribution/self-managed-k8s
+     ~/KubeArmor/contribution/self-managed-k8s$ ./setup.sh
      ```
 
      [setup.sh](https://github.com/accuknox/KubeArmor/blob/master/contribution/self-managed-k8s/setup.sh) will automatically install BCC \(latest\), Go \(v1.15.2\), and Protobuf \(3.14.0\).
@@ -55,35 +54,51 @@
      If you do not have Vagrant and VirtualBox in your environment, you can easily install them by running the following command.
 
      ```text
-     cd contribution/vagrant
-     (vagrant) $ ./setup.sh
+     cd KubeArmor/contribution/vagrant
+     ~/KubeArmor/contribution/vagrant$ ./setup.sh
+     ```
+
+     If you do not have ssh keys in '~/.ssh' yet, you need to run the following command in advance.
+
+     ```text
+     ~/KubeArmor/contribution/vagrant$ ssh-keygen -> [Enter] -> [Enter] -> [Enter]
      ```
 
     * VM Setup using Vagrant
 
-      If you do not have ssh keys in '~/.ssh' yet, you need to run the following command in advance.
-
-      ```text
-      (vagrant) $ ssh-keygen -> [Enter] -> [Enter] -> [Enter]
-      ```
-
       Now, it is time to create a VM for development. You can directly use the vagrant command to create a VM.
 
       ```text
-      (vagrant) $ vagrant up
+      ~/KubeArmor/contribution/vagrant$ vagrant up
       ```
+
+	  To stop the vagrant VM
+	  ```text
+      ~/KubeArmor/contribution/vagrant$ vagrant halt
+	  ```
 
       If you want to remove the created VM, please run the following command.
 
       ```text
-      (vagrant) $ vagrant destroy
+      ~/KubeArmor/contribution/vagrant$ vagrant destroy
       ```
 
       You are ready to develop the code for KubeArmor. Enjoy your journey with KubeArmor.
 
       ```text
-      (vagrant) $ vagrant ssh
+      ~/KubeArmor/contribution/vagrant$ vagrant ssh
       ```
+
+	* VM Setup using latest Linux kernel (netnext)
+
+	To use the latest linux kernel for dev env you can pass an environment variable `NETNEXT=1` to vagrant.
+      ```text
+      $ cd KubeArmor/contribution/vagrant
+      ~/KubeArmor/contribution/vagrant$ NETNEXT=1 vagrant up
+      ~/KubeArmor/contribution/vagrant$ NETNEXT=1 vagrant ssh
+      ~/KubeArmor/contribution/vagrant$ NETNEXT=1 vagrant halt
+      ~/KubeArmor/contribution/vagrant$ NETNEXT=1 vagrant destroy
+	  ```
 
 3.  Environment Check
     * Compilation
@@ -92,7 +107,7 @@
 
         ```text
         $ cd KubeArmor/KubeArmor
-        (KubeArmor) $ make
+        ~/KubeArmor/KubeArmor$ make
         ```
 
         ![make](../.gitbook/assets/local_test_make.png)  
@@ -111,7 +126,7 @@
 
         ```text
         $ cd KubeArmor/KubeArmor
-        (KubeArmor) $ make run
+        ~/KubeArmor/KubeArmor$ make run
         ```
 
         ![make](../.gitbook/assets/local_test_make_run.png)  
@@ -137,23 +152,26 @@ Here, we briefly give you an overview of KubeArmor's directories.
 
   ```text
   KubeArmor/
-    audit       - Audit logger
-    BPF         - eBPF code for system monitor
-    common      - Libraries internally used
-    core        - The main body (start point) of KubeArmor
-    discovery   - Automated security policy discovery (under development)
-    enforcer    - Runtime policy enforcer (enforcing security policies into LSMs)
-    feeder      - gRPC-based feeder (sending audit/system logs to a log server)
-    log         - Message logger (stdout) for KubeArmor
-    monitor     - eBPF-based system monitor (mapping process IDs to container IDs)
-    types       - Type definitions
-  protobuf/     - Protocol buffer
+    audit                - Audit logger (deprecated)
+    BPF                  - eBPF code for system monitor
+    common               - Libraries internally used
+    core                 - The main body (start point) of KubeArmor
+    discovery            - Automated security policy discovery (under development)
+    enforcer             - Runtime policy enforcer (enforcing security policies into LSMs)
+    feeder               - gRPC-based feeder (sending audit/system logs to a log server)
+    log                  - Message logger (stdout) for KubeArmor
+    monitor              - eBPF-based system monitor (mapping process IDs to container IDs)
+    types                - Type definitions
+  KubeArmor-relay-server - Relay server for KubeArmor's distributed log collection
+  protobuf/              - Protocol buffer
   ```
 
 * Source code for KubeArmor's log client
 
   ```text
-  LogClient/    - gRPC-based log client
+  LogClient/    - gRPC-based stdout/file client
+  MySQLClient/  - gRPC-based MySQL client
+  KafkaClient/  - gRPC-based Kafka client
   protobuf/     - Protocol buffer
   ```
 

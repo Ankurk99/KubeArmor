@@ -304,6 +304,8 @@ type KubeArmorPolicySpec struct {
 	Capabilities CapabilitiesType `json:"capabilities,omitempty"`
 	Resource     ResourceType     `json:"resource,omitempty"`
 
+	AppArmor string `json:"apparmor,omitempty"`
+
 	// +kubebuilder:validation:optional
 	Severity SeverityType `json:"severity,omitempty"`
 	// +kubebuilder:validation:optional

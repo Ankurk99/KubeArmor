@@ -11,6 +11,15 @@ fi
 # turn off swap
 sudo swapoff -a
 
+# enable ip forwarding
+sudo bash -c "echo '1' > /proc/sys/net/ipv4/ip_forward"
+sudo bash -c "echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf"
+
+# activate br_netfilter
+sudo modprobe br_netfilter
+sudo bash -c "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
+sudo bash -c "echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.conf"
+
 if [ ! -z $1 ] && [ "$1" == "weave" ]; then
     # initialize the master node (weave)
     sudo kubeadm init | tee -a ~/k8s_init.log
@@ -29,10 +38,10 @@ else
 fi
 
 # make kubectl work for non-root user
-if [ "$(hostname)" == "kubearmor-dev" ]; then
+if [[ $(hostname) = kubearmor-dev* ]]; then
     mkdir -p /home/vagrant/.kube
     sudo cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-    sudo chown vagrant:vagrant /home/vagrant/.kube/config
+    sudo chown -R vagrant:vagrant /home/vagrant/.kube
     export KUBECONFIG=/home/vagrant/.kube/config
     echo "export KUBECONFIG=/home/vagrant/.kube/config" | tee -a /home/vagrant/.bashrc
 else

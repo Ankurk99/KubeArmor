@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: elasticsearch
+  name: kubearmor-elasticsearch
   namespace: kubearmor
 spec:
   selector:
-    app: elasticsearch
+    kubearmor-app: kubearmor-elasticsearch
   ports:
   - name: es-9200
     port: 9200
@@ -16,22 +16,51 @@ spec:
     targetPort: 9300
     protocol: TCP
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kubearmor-elasticsearch-pv-volume
+  namespace: kubearmor
+  labels:
+    type: local
+spec:
+  storageClassName: kubearmor-elasticsearch-pv
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: /tmp/data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kubearmor-elasticsearch-pv-claim
+  namespace: kubearmor
+spec:
+  storageClassName: kubearmor-elasticsearch-pv
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: elasticsearch
+  name: kubearmor-elasticsearch
   namespace: kubearmor
   labels:
-    app: elasticsearch
+    kubearmor-app: kubearmor-elasticsearch
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: elasticsearch
+      kubearmor-app: kubearmor-elasticsearch
   template:
     metadata:
       labels:
-        app: elasticsearch
+        kubearmor-app: kubearmor-elasticsearch
     spec:
       initContainers:
       - name: init-sysctl
@@ -40,8 +69,17 @@ spec:
         command: ["sysctl", "-w", "vm.max_map_count=262144"]
         securityContext:
           privileged: true
+      - name: fix-permissions
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "chown -R 1000:1000 /data"]
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: data-path
+          mountPath: /data
       containers:
-      - name: elasticsearch
+      - name: kubearmor-elasticsearch
         image: elastic/elasticsearch:6.8.6
         imagePullPolicy: Always
         securityContext:
@@ -69,9 +107,16 @@ spec:
           value: "false"
         - name: ES_JAVA_OPTS
           value: -Xmx256m -Xms256m
+        volumeMounts:
+        - name: data-path
+          mountPath: /usr/share/elasticsearch/data
         ports:
         - containerPort: 9200
         - containerPort: 9300
+      volumes:
+      - name: data-path
+        persistentVolumeClaim:
+          claimName: kubearmor-elasticsearch-pv-claim
 
 # max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
 # sudo sysctl -w vm.max_map_count=262144

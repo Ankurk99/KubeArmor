@@ -21,7 +21,7 @@ elif [ ! -z $1 ] && [ "$1" == "calico" ]; then
     # initialize the master node (calico)
     sudo kubeadm init --pod-network-cidr=192.168.0.0/16 | tee -a ~/k8s_init.log
 elif [ ! -z $1 ] && [ "$1" == "cilium" ]; then
-    # initialize the master node (calico)
+    # initialize the master node (cilium)
     sudo kubeadm init --pod-network-cidr=192.168.0.0/16 | tee -a ~/k8s_init.log
 else
     # initialize the master node (flannel) by default
@@ -29,7 +29,7 @@ else
 fi
 
 # make kubectl work for non-root user
-if [ "$(hostname)" == "kubearmor-dev" ]; then
+if [[ $(hostname) = kubearmor-dev* ]]; then
     mkdir -p /home/vagrant/.kube
     sudo cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
     sudo chown vagrant:vagrant /home/vagrant/.kube/config

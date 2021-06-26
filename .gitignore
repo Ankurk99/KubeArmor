@@ -1,10 +1,14 @@
 # KubeArmor
 go.sum
 kubearmor
-kubearmor-client
+kubearmor-log-client
 kubearmor-mysql-client
 kubearmor-kafka-client
 kubearmor-relay-server
 
 # Contribution
 .vscode
+
+# vagrant
+contribution/vagrant/.vagrant
+contribution/vagrant/ubuntu-*-console.log
