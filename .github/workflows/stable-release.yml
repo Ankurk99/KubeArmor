@@ -10,7 +10,7 @@ on:
 name: KubeArmor stable release 
 
 env: 
-  STABLE_TAG: kubearmor/kubearmor:stable
+  STABLE_TAG: stable
 
 jobs:
   build:
