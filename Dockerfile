@@ -37,3 +37,4 @@ COPY --from=builder /usr/src/KubeArmor/KubeArmor/BPF/* /KubeArmor/BPF/
 COPY --from=builder /usr/src/KubeArmor/GKE/*.sh /KubeArmor/GKE/
 
 ENTRYPOINT ["/KubeArmor/entrypoint.sh"]
+
