@@ -3,27 +3,36 @@ on:
     # Sequence of patterns matched against refs/tags
     branches:
       - 'main'
+      - 'v*'
+
     paths: 
       - 'KubeArmor/**'
       - 'protobuf/**'
 
-name: Latest version release after testing KubeArmor image
+name: Create KubeArmor releases after testing the image
 
 jobs:
   build:
-    name: Create KubeArmor Release - 18.04
+    name: Create KubeArmor Release
     runs-on: ubuntu-18.04
     timeout-minutes: 20
     steps:
       - name: Checkout KubeArmor code
         uses: actions/checkout@v2
 
-      - name: Generate KubeArmor artifacts
-        run: GITHUB_SHA=$GITHUB_SHA ./KubeArmor/build/build_kubearmor.sh
-
       - name: Setup Enviroment
-        run: |        
+        id: vars
+        run: |
+          if: [[ github.ref == 'refs/heads/main' ]]; then
+            echo ::set-output name=tag::stable
+          else
+            echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+          fi
+
           ./contribution/k3s/install_k3s.sh
+        
+      - name: Generate KubeArmor artifacts
+        run: GITHUB_SHA=$GITHUB_SHA ./KubeArmor/build/build_kubearmor.sh ${{ steps.vars.outputs.tag }}
 
       - name: Run KubeArmor 
         run: |
@@ -35,6 +44,27 @@ jobs:
         run: |
           ./tests/test-scenarios-github.sh
 
+      - name: Check Tag
+        id: check-tag
+        run: |
+          if [[ ${{ github.event.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo ::set-output name=match::true
+          fi
+
+      - name: Create Release
+        if: steps.check-tag.outputs.match == 'true'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true # turn this to false once release notes are automatically added
+          prerelease: false
+          body: |
+            Note for maintainers:: Update the description with the actual release notes.
+
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -42,4 +72,4 @@ jobs:
           password: ${{ secrets.DOCKER_AUTHTOK }}
 
       - name: Push KubeArmor images to Docker
-        run: ./KubeArmor/build/push_kubearmor.sh
+        run: ./KubeArmor/build/push_kubearmor.sh ${{ steps.vars.outputs.tag }}
