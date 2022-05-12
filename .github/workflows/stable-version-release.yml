@@ -3,13 +3,14 @@ on:
     # Sequence of patterns matched against refs/tags
     branches:
       - 'v*'
+      - "test"
 
 name: KubeArmor stable release update
 
 jobs:
   build:
     name: Create KubeArmor Release - 18.04
-    if: github.repository == 'kubearmor/kubearmor'
+      #    if: github.repository == 'kubearmor/kubearmor'
     runs-on: ubuntu-18.04
     timeout-minutes: 20
     steps:
@@ -22,13 +23,13 @@ jobs:
         id: match
         run: |
             value=`cat STABLE-RELEASE`
-            if [ ${{ github.ref }} == refs/heads/$value ]; then
+            #if [ ${{ github.ref }} == refs/heads/$value ]; then
               docker pull docker.io/kubearmor/kubearmor:$value
               docker image tag kubearmor/kubearmor:$value kubearmor/kubearmor:stable
               echo ::set-output name=tag::true
-            else
-              echo ::set-output name=tag::false
-            fi
+              #else
+              #echo ::set-output name=tag::false
+              #fi
 
       - name: Login to Docker Hub
         if: steps.match.outputs.tag == 'true'
