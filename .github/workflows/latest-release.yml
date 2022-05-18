@@ -4,11 +4,12 @@ on:
     branches:
       - 'main'
       - 'v*'
+      - 'test'
 
-    paths: 
-      - 'KubeArmor/**'
-      - 'tests/**'
-      - 'protobuf/**'
+    # paths: 
+    #   - 'KubeArmor/**'
+    #   - 'tests/**'
+    #   - 'protobuf/**'
 
   create:
     branches:
@@ -19,7 +20,7 @@ name: Create KubeArmor release after testing the image
 jobs:
   build:
     name: Create KubeArmor Release
-    if: github.repository == 'kubearmor/kubearmor'
+    # if: github.repository == 'kubearmor/kubearmor'
     runs-on: ubuntu-18.04
     timeout-minutes: 20
     steps:
@@ -44,7 +45,7 @@ jobs:
       - name: Run KubeArmor
         run: |
             sed -i 's|kubearmor/kubearmor:latest|kubearmor/kubearmor:'${{ steps.vars.outputs.tag }}'|' ./KubeArmor/build/kubearmor-test-k3s.yaml
-            kubectl apply -f KubeArmor/build/kubearmor-test-k3s.yaml && kubectl wait --for=condition=ready --timeout=5m -n kube-system pod -l kubearmor-app=kubearmor
+            kubectl apply -f KubeArmor/build/kubearmor-test-k3s.yaml && kubectl wait --for=condition=ready --timeout=10m -n kube-system pod -l kubearmor-app=kubearmor
             kubectl get pods -A
 
       - name: Test KubeArmor
