@@ -449,6 +449,11 @@ func KubeArmor() {
 
 	// == //
 
+	if !dm.K8sEnabled && cfg.GlobalCfg.Policy {
+		dm.GetAlreadyDeployedDockerContainers()
+		go dm.MonitorDockerEvents()
+	}
+
 	if dm.K8sEnabled && cfg.GlobalCfg.Policy {
 		// check if the CRI socket set while executing kubearmor exists
 		if cfg.GlobalCfg.CRISocket != "" {
