@@ -35,6 +35,11 @@ run: build
 	cd $(CURDIR); sudo rm -f /tmp/kubearmor.log
 	cd $(CURDIR); sudo -E ./kubearmor -logPath=/tmp/kubearmor.log -enableKubeArmorPolicy=true -enableKubeArmorHostPolicy=true -hostVisibility=process,file,network,capabilities
 
+.PHONY: run-docker
+run-docker: build
+	cd $(CURDIR); sudo rm -f /tmp/kubearmor.log
+	cd $(CURDIR); sudo -E ./kubearmor -logPath=/tmp/kubearmor.log -enableKubeArmorPolicy=true -k8s=false
+
 .PHONY: run-host-only
 run-host-only: build
 	cd $(CRDDIR); kubectl apply -f KubeArmorHostPolicy.yaml
