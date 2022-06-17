@@ -1191,6 +1191,11 @@ func (dm *KubeArmorDaemon) UpdateHostSecurityPolicies() {
 	}
 }
 
+// // ParseAndUpdateContainerSecurityPolicy Functions
+// func (dm *KubeArmorDaemon) ParseAndUpdateContainerSecurityPolicy(event tp.K8sKubeArmorHostPolicyEvent) {
+
+// }
+
 // ParseAndUpdateHostSecurityPolicy Function
 func (dm *KubeArmorDaemon) ParseAndUpdateHostSecurityPolicy(event tp.K8sKubeArmorHostPolicyEvent) {
 	// create a host security policy

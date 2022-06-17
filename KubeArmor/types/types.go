@@ -46,8 +46,8 @@ type Container struct {
 
 // EndPoint Structure
 type EndPoint struct {
-	NamespaceName string `json:"namespaceName"`
-	EndPointName  string `json:"endPointName"`
+	NamespaceName string `json:"namespaceName"` // default
+	EndPointName  string `json:"endPointName"`  // containername
 
 	Labels     map[string]string `json:"labels"`
 	Identities []string          `json:"identities"`

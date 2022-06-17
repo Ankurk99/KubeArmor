@@ -38,7 +38,7 @@ run: build
 .PHONY: run-docker
 run-docker: build
 	cd $(CURDIR); sudo rm -f /tmp/kubearmor.log
-	cd $(CURDIR); sudo -E ./kubearmor -logPath=/tmp/kubearmor.log -enableKubeArmorPolicy=true -k8s=false
+	cd $(CURDIR); sudo -E ./kubearmor -logPath=/tmp/kubearmor.log -enableKubeArmorPolicy=true -enableKubeArmorHostPolicy -k8s=false
 
 .PHONY: run-host-only
 run-host-only: build

@@ -4,6 +4,7 @@
 package enforcer
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -315,7 +316,8 @@ func (ae *AppArmorEnforcer) UnregisterAppArmorProfile(podName, profileName strin
 // ====================================== //
 
 // AppArmorEnforcer constants
-const appArmorHostFile = "/etc/apparmor.d/kubearmor.host"
+var appArmorHostFile = "/etc/apparmor.d/kubearmor.host"
+var apparmorfile = "/etc/apparmor.d/container_lb"
 
 // ClearKubeArmorHostFile Function
 func (ae *AppArmorEnforcer) ClearKubeArmorHostFile(fileName string) {
@@ -328,12 +330,13 @@ func (ae *AppArmorEnforcer) ClearKubeArmorHostFile(fileName string) {
 }
 
 // CreateAppArmorHostProfile Function
-func (ae *AppArmorEnforcer) CreateAppArmorHostProfile() error {
+func (ae *AppArmorEnforcer) CreateAppArmorHostProfile(apparmorfile string) error {
 	// skip if AppArmorEnforcer is not active
 	if ae == nil {
 		return nil
 	}
 
+	// containerenabled()
 	apparmorHostDefault := "## == Managed by KubeArmor == ##\n" +
 		"\n" +
 		"#include <tunables/global>\n" +
@@ -355,7 +358,7 @@ func (ae *AppArmorEnforcer) CreateAppArmorHostProfile() error {
 		"  ## == POLICY END == ##\n" +
 		"}\n"
 
-	newfile, err := os.Create(filepath.Clean(appArmorHostFile))
+	newfile, err := os.Create(filepath.Clean(apparmorfile))
 	if err != nil {
 		ae.Logger.Warnf("Unable to open the KubeArmor host profile in %s (%s)", cfg.GlobalCfg.Host, err.Error())
 		return err
@@ -383,10 +386,16 @@ func (ae *AppArmorEnforcer) RegisterAppArmorHostProfile() bool {
 		return true
 	}
 
+	// Check if docker daemon is running
+	if _, err := os.Stat("/var/run/docker.pid"); err == nil {
+		fmt.Println("Docker is enabled")
+		appArmorHostFile = apparmorfile
+	}
+
 	ae.AppArmorProfilesLock.Lock()
 	defer ae.AppArmorProfilesLock.Unlock()
 
-	if err := ae.CreateAppArmorHostProfile(); err != nil {
+	if err := ae.CreateAppArmorHostProfile(apparmorfile); err != nil {
 		ae.Logger.Warnf("Unable to create the KubeArmor host profile in %s (%s)", cfg.GlobalCfg.Host, err.Error())
 		return false
 	}
@@ -413,7 +422,13 @@ func (ae *AppArmorEnforcer) UnregisterAppArmorHostProfile() bool {
 	ae.AppArmorProfilesLock.Lock()
 	defer ae.AppArmorProfilesLock.Unlock()
 
-	if err := ae.CreateAppArmorHostProfile(); err != nil {
+	// Check if docker daemon is running
+	if _, err := os.Stat("/var/run/docker.pid"); err == nil {
+		fmt.Println("Docker is enabled")
+		appArmorHostFile = apparmorfile
+	}
+
+	if err := ae.CreateAppArmorHostProfile(apparmorfile); err != nil {
 		ae.Logger.Warnf("Unable to reset the KubeArmor host profile in %s", cfg.GlobalCfg.Host)
 
 		if err := os.Remove(appArmorHostFile); err != nil {
@@ -530,6 +545,12 @@ func (ae *AppArmorEnforcer) UpdateAppArmorHostProfile(secPolicies []tp.HostSecur
 		FileAction:         cfg.GlobalCfg.DefaultFilePosture,
 		NetworkAction:      cfg.GlobalCfg.DefaultNetworkPosture,
 		CapabilitiesAction: cfg.GlobalCfg.DefaultCapabilitiesPosture,
+	}
+
+	// Check if docker daemon is running
+	if _, err := os.Stat("/var/run/docker.pid"); err == nil {
+		fmt.Println("Docker is enabled")
+		appArmorHostFile = apparmorfile
 	}
 
 	if policyCount, newProfile, ok := ae.GenerateAppArmorHostProfile(secPolicies, globalDefaultPosture); ok {
