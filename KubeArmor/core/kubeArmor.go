@@ -541,12 +541,20 @@ func KubeArmor() {
 		dm.Logger.Print("Started to monitor host security policies")
 	}
 
+	policyService := &policy.ServiceServer{}
+
 	if !cfg.GlobalCfg.K8sEnv && cfg.GlobalCfg.HostPolicy {
-		policyService := &policy.ServiceServer{}
 		policyService.UpdateHostPolicy = dm.ParseAndUpdateHostSecurityPolicy
 
 		pb.RegisterPolicyServiceServer(dm.Logger.LogServer, policyService)
 		reflection.Register(dm.Logger.LogServer)
+
+		dm.Logger.Print("Started to monitor host security policies on gRPC")
+
+	}
+
+	if !dm.K8sEnabled && cfg.GlobalCfg.ContainerPolicy {
+		policyService.UpdateContainerPolicy = dm.ParseAndUpdateContainerSecurityPolicy
 
 		dm.Logger.Print("Started to monitor host security policies on gRPC")
 	}
