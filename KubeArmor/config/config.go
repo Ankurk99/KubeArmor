@@ -26,10 +26,11 @@ type KubearmorConfig struct {
 	Visibility     string // Container visibility to use
 	HostVisibility string // Host visibility to use
 
-	Policy     bool // Enable/Disable policy enforcement
-	HostPolicy bool // Enable/Disable host policy enforcement
-	KVMAgent   bool // Enable/Disable KVM Agent
-	K8sEnv     bool // Is k8s env ?
+	Policy          bool // Enable/Disable policy enforcement
+	HostPolicy      bool // Enable/Disable host policy enforcement
+	ContainerPolicy bool // Enable/Disable container policy enforcement
+	KVMAgent        bool // Enable/Disable KVM Agent
+	K8sEnv          bool // Is k8s env ?
 
 	DefaultFilePosture         string // Default Enforcement Action in Global File Context
 	DefaultNetworkPosture      string // Default Enforcement Action in Global Network Context
@@ -80,6 +81,9 @@ const ConfigKubearmorPolicy string = "enableKubeArmorPolicy"
 // ConfigKubearmorHostPolicy Kubearmor host policy key
 const ConfigKubearmorHostPolicy string = "enableKubeArmorHostPolicy"
 
+// ConfigKubearmorContainerPolicy Kubearmor host policy key
+const ConfigKubearmorContainerPolicy string = "enableKubeArmorContainerPolicy"
+
 // ConfigKubearmorVM Kubearmor VM key
 const ConfigKubearmorVM string = "enableKubeArmorVm"
 
@@ -124,6 +128,7 @@ func readCmdLineParams() {
 
 	policyB := flag.Bool(ConfigKubearmorPolicy, true, "enabling KubeArmorPolicy")
 	hostPolicyB := flag.Bool(ConfigKubearmorHostPolicy, false, "enabling KubeArmorHostPolicy")
+	containerPolicyB := flag.Bool(ConfigKubearmorContainerPolicy, false, "enabling KubeArmorContainerPolicy")
 	kvmAgentB := flag.Bool(ConfigKubearmorVM, false, "enabling KubeArmorVM")
 	k8sEnvB := flag.Bool(ConfigK8sEnv, true, "is k8s env?")
 
@@ -160,6 +165,7 @@ func readCmdLineParams() {
 
 	viper.SetDefault(ConfigKubearmorPolicy, *policyB)
 	viper.SetDefault(ConfigKubearmorHostPolicy, *hostPolicyB)
+	viper.SetDefault(ConfigKubearmorContainerPolicy, *containerPolicyB)
 	viper.SetDefault(ConfigKubearmorVM, *kvmAgentB)
 	viper.SetDefault(ConfigK8sEnv, *k8sEnvB)
 
@@ -211,6 +217,7 @@ func LoadConfig() error {
 
 	GlobalCfg.Policy = viper.GetBool(ConfigKubearmorPolicy)
 	GlobalCfg.HostPolicy = viper.GetBool(ConfigKubearmorHostPolicy)
+	GlobalCfg.ContainerPolicy = viper.GetBool(ConfigKubearmorContainerPolicy)
 	GlobalCfg.KVMAgent = viper.GetBool(ConfigKubearmorVM)
 	GlobalCfg.K8sEnv = viper.GetBool(ConfigK8sEnv)
 
