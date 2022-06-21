@@ -339,9 +339,6 @@ func (dm *KubeArmorDaemon) UpdateDockerContainer(containerID, action string) {
 			container.NamespaceName = "container_namespace"
 
 			dm.Containers[container.ContainerID] = container
-			dm.EndPointsLock.Lock()
-
-			dm.EndPointsLock.Unlock()
 			dm.ContainersLock.Unlock()
 		}
 
