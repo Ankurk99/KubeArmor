@@ -80,8 +80,12 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
+<<<<<<< HEAD
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
+=======
+	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
+>>>>>>> ed48541 (get basic monitoring working skeleton)
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect

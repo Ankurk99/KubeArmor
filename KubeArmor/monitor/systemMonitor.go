@@ -26,37 +26,6 @@ import (
 	tp "github.com/kubearmor/KubeArmor/KubeArmor/types"
 )
 
-// ===================== //
-// == Const. Vaiables == //
-// ===================== //
-
-// System Call Numbers
-const (
-	SysOpen     = 2
-	SysOpenAt   = 257
-	SysClose    = 3
-	SysUnlink   = 87
-	SysUnlinkAt = 263
-	SysRmdir    = 84
-
-	SysSocket  = 41
-	SysConnect = 42
-	SysAccept  = 43
-	SysBind    = 49
-	SysListen  = 50
-
-	SysExecve   = 59
-	SysExecveAt = 322
-
-	DoExit            = 351
-	SecurityBprmCheck = 352
-
-	TCPConnect   = 400
-	TCPAccept    = 401
-	TCPConnectv6 = 402
-	TCPAcceptv6  = 403
-)
-
 // SystemMonitor Constant Values
 const (
 	PermissionDenied = -13
@@ -339,7 +308,7 @@ func (mon *SystemMonitor) InitBPF() error {
 		mon.SyscallChannel = make(chan []byte, 8192)
 		mon.SyscallLostChannel = make(chan uint64)
 
-		mon.SyscallPerfMap, err = perf.NewReader(mon.BpfModule.Maps["sys_events"], os.Getpagesize() * 1024)
+		mon.SyscallPerfMap, err = perf.NewReader(mon.BpfModule.Maps["sys_events"], os.Getpagesize()*1024)
 		if err != nil {
 			return fmt.Errorf("error initializing events perf map: %v", err)
 		}
