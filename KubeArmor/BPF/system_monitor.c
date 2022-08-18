@@ -139,6 +139,7 @@
 // common event_ids
 enum {
     _DO_EXIT = 351,
+    _SYS_RMDIR = 84,
 
     // lsm
     _SECURITY_BPRM_CHECK = 352,
