@@ -10,6 +10,7 @@ const (
 	SysClose    = 3
 	SysUnlink   = 87
 	SysUnlinkAt = 263
+	SysRmdir    = 84
 
 	SysSocket  = 41
 	SysConnect = 42

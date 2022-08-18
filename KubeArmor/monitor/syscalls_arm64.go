@@ -5,9 +5,12 @@ package monitor
 
 // Syscall arm/aarch
 const (
-	// not present in arm but kept for testing
+
+	// not present in arm but kept to not break x86-64 dependent code
 	SysOpen   = 2
 	SysUnlink = 87
+	SysRmdir  = 84
+	//
 
 	SysOpenAt   = 56
 	SysClose    = 57
