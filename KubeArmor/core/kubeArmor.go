@@ -616,7 +616,7 @@ func KubeArmor() {
 		dm.Logger.Print("Started to monitor container security policies on gRPC")
 	}
 
-	if !cfg.GlobalCfg.K8sEnv && cfg.GlobalCfg.HostPolicy {
+	if !dm.K8sEnabled {
 		policyService.UpdateHostPolicy = dm.ParseAndUpdateHostSecurityPolicy
 		dm.Node.PolicyEnabled = tp.KubeArmorPolicyEnabled
 
