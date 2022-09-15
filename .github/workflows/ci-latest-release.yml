@@ -49,6 +49,12 @@ jobs:
       - name: Install an annotation controller
         run: ./.github/workflows/install-annotation-controller.sh
 
+      - name: install buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+
       - name: Generate KubeArmor artifacts
         run: GITHUB_SHA=$GITHUB_SHA ./KubeArmor/build/build_kubearmor.sh ${{ steps.vars.outputs.tag }}
 
