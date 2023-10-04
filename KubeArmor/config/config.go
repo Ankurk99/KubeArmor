@@ -43,8 +43,9 @@ type KubearmorConfig struct {
 
 	CoverageTest bool // Enable/Disable Coverage Test
 
-	LsmOrder  []string // LSM order
-	BPFFsPath string   // path to the BPF filesystem
+	UntrackedNs []string // untracked namespaces
+	LsmOrder    []string // LSM order
+	BPFFsPath   string   // path to the BPF filesystem
 }
 
 // PolicyDir policy dir path for host policies backup
@@ -113,6 +114,9 @@ const ConfigCoverageTest string = "coverageTest"
 // ConfigK8sEnv VM key
 const ConfigK8sEnv string = "k8s"
 
+// Untracked Namespaces
+const UntrackedNs string = "untrackedNs"
+
 // LsmOrder Preference order of the LSMs
 const LsmOrder string = "lsm"
 
@@ -146,6 +150,8 @@ func readCmdLineParams() {
 	hostDefaultCapabilitiesPosture := flag.String(ConfigHostDefaultCapabilitiesPosture, "audit", "configuring default enforcement action in global capability context {allow|audit|block}")
 
 	coverageTestB := flag.Bool(ConfigCoverageTest, false, "enabling CoverageTest")
+
+	untrackedNs := flag.String(UntrackedNs, "kube-system,kubearmor", "Namespaces which are not being tracked, default untracked:[kube-system, kubearmor]")
 
 	lsmOrder := flag.String(LsmOrder, "bpf,apparmor,selinux", "lsm preference order to use, available lsms [bpf, apparmor, selinux]")
 
@@ -185,6 +191,8 @@ func readCmdLineParams() {
 	viper.SetDefault(ConfigHostDefaultCapabilitiesPosture, *hostDefaultCapabilitiesPosture)
 
 	viper.SetDefault(ConfigCoverageTest, *coverageTestB)
+
+	viper.SetDefault(UntrackedNs, *untrackedNs)
 
 	viper.SetDefault(LsmOrder, *lsmOrder)
 
@@ -262,6 +270,8 @@ func LoadConfig() error {
 	}
 
 	GlobalCfg.CoverageTest = viper.GetBool(ConfigCoverageTest)
+
+	GlobalCfg.UntrackedNs = strings.Split(viper.GetString(UntrackedNs), ",")
 
 	GlobalCfg.LsmOrder = strings.Split(viper.GetString(LsmOrder), ",")
 
