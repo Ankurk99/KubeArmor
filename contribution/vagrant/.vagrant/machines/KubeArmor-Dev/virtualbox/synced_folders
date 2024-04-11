@@ -1,0 +1,1 @@
+{"virtualbox":{"/home/vagrant/KubeArmor":{"guestpath":"/home/vagrant/KubeArmor","hostpath":"/home/knownymous/go/src/github.com/accuknox/KubeArmor","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/knownymous/go/src/github.com/accuknox/KubeArmor/contribution/vagrant","disabled":false,"__vagrantfile":true}}}
